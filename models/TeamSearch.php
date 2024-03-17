@@ -17,7 +17,7 @@ class TeamSearch extends Team
     public function rules()
     {
         return [
-            [['id'], 'integer'],
+            [['id', 'order'], 'integer'],
             [['name', 'color_hex', 'date_created', 'date_updated', 'date_deleted'], 'safe'],
         ];
     }
@@ -59,6 +59,7 @@ class TeamSearch extends Team
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
+            'order' => $this->order,
             'date_created' => $this->date_created,
             'date_updated' => $this->date_updated,
             'date_deleted' => $this->date_deleted,
@@ -66,6 +67,8 @@ class TeamSearch extends Team
 
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'color_hex', $this->color_hex]);
+
+        $query->orderBy(['order' => SORT_ASC]);
 
         return $dataProvider;
     }

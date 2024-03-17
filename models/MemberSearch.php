@@ -67,6 +67,8 @@ class MemberSearch extends Member
 
         $query->andFilterWhere(['like', 'name', $this->name]);
 
+        $query->orderBy(['name' => SORT_ASC]);
+
         return $dataProvider;
     }
 }

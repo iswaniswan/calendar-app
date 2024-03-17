@@ -44,6 +44,8 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
             // ['label' => 'Contact', 'url' => ['/site/contact']],
             ['label' => 'Team', 'url' => ['/site/team']],
             ['label' => 'Member', 'url' => ['/site/member']],
+            ['label' => 'Holiday', 'url' => ['/holiday']],
+            ['label' => 'Settings', 'url' => ['/setting']],
             // Yii::$app->user->isGuest
             //     ? ['label' => 'Login', 'url' => ['/site/login']]
             //     : '<li class="nav-item">'

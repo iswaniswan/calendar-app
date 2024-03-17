@@ -2,17 +2,16 @@
 
 namespace app\controllers;
 
-use app\models\Schedule;
-use app\models\ScheduleSearch;
-use Yii;
+use app\models\Holiday;
+use app\models\HolidaySearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * ScheduleController implements the CRUD actions for Schedule model.
+ * HolidayController implements the CRUD actions for Holiday model.
  */
-class ScheduleController extends Controller
+class HolidayController extends Controller
 {
     /**
      * @inheritDoc
@@ -33,13 +32,13 @@ class ScheduleController extends Controller
     }
 
     /**
-     * Lists all Schedule models.
+     * Lists all Holiday models.
      *
      * @return string
      */
     public function actionIndex()
     {
-        $searchModel = new ScheduleSearch();
+        $searchModel = new HolidaySearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
         return $this->render('index', [
@@ -49,7 +48,7 @@ class ScheduleController extends Controller
     }
 
     /**
-     * Displays a single Schedule model.
+     * Displays a single Holiday model.
      * @param int $id ID
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
@@ -62,13 +61,13 @@ class ScheduleController extends Controller
     }
 
     /**
-     * Creates a new Schedule model.
+     * Creates a new Holiday model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
     public function actionCreate()
     {
-        $model = new Schedule();
+        $model = new Holiday();
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
@@ -84,7 +83,7 @@ class ScheduleController extends Controller
     }
 
     /**
-     * Updates an existing Schedule model.
+     * Updates an existing Holiday model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id ID
      * @return string|\yii\web\Response
@@ -104,7 +103,7 @@ class ScheduleController extends Controller
     }
 
     /**
-     * Deletes an existing Schedule model.
+     * Deletes an existing Holiday model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
      * @return \yii\web\Response
@@ -118,49 +117,18 @@ class ScheduleController extends Controller
     }
 
     /**
-     * Finds the Schedule model based on its primary key value.
+     * Finds the Holiday model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id ID
-     * @return Schedule the loaded model
+     * @return Holiday the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Schedule::findOne(['id' => $id])) !== null) {
+        if (($model = Holiday::findOne(['id' => $id])) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-
-    public function actionCalendar()
-    {        
-        // get 3 month schedule, 1 month before, current month and 1 month next
-        $dataSchedule = Schedule::get3MonthScheduled();
-        
-        return $this->render('index-calendar', [
-            'dataSchedule' => $dataSchedule
-        ]);
-    }
-
-    public function actionGenerate()
-    {
-        $model = new Schedule();
-
-        if ($this->request->isPost 
-            and $model->load($this->request->post()) 
-            and $model->work_date_start 
-            and $model->work_date_end
-            and $model->id_team) {
-            
-                if ($model->generate()) {
-                    Yii::$app->session->setFlash('success', 'Data berhasil disimpan.');
-                } else {
-                    Yii::$app->session->setFlash('error', 'Terjadi kesalahan.');
-                }
-        } 
-
-        return $this->redirect(['setting/index']);
-    }
-
 }

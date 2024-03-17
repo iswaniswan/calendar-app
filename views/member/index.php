@@ -28,7 +28,13 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            'name',
+            [
+                'attribute' => 'name',
+                'label' => 'Name',
+                'value' => function ($model) {
+                    return strtoupper($model->name);
+                }
+            ],
             [
                 'attribute' => 'id_team',
                 'label' => 'Team',
@@ -53,8 +59,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $html;
                 },
             ],
-            'date_created',
-            'date_updated',
+            // 'date_created',
+            // 'date_updated',
             //'date_deleted',
             [
                 'class' => ActionColumn::className(),

@@ -16,8 +16,35 @@ rmrevin\yii\fontawesome\AssetBundle::register($this);
 use app\assets\CalendarAsset;
 CalendarAsset::register($this);
 
-$this->title = 'Calendar App';
+$this->title = 'Jadwal Kebersihan MIS - Lokasi LG1';
 $this->params['breadcrumbs'][] = $this->title;
+
+$style = <<<CSS
+    .calendar .day-names {
+        border-bottom: 1px solid #aaa;
+    }
+    .calendar .days {
+        border-bottom: 1px solid #aaa;
+    }
+    /* hide navbar and breadcrumb */
+    #w0, .breadcrumb, #footer {
+        display: none !important;
+    }
+
+    /* * custom color class
+    .bgc-alpha {
+        background-color: #000
+    } */
+CSS;
+
+foreach ($dataSchedule as $arr) {
+    $style .= "." . $arr['cls'] . "{ background-color: " . $arr['color_hex'] ." } " ;
+}
+
+$this->registerCss($style);
+
+$dataSchdule = json_encode($dataSchedule);
+
 ?>
 
 <div class="alert alert-danger" style="display:none" id="notification-wrapper">
@@ -26,7 +53,7 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 <div class="schedule-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1 class="text-center"><?= Html::encode($this->title) ?></h1>
 
     <div class="row">
         <div class="col-12">
@@ -39,31 +66,23 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php 
 
-$style = <<<CSS
-    .calendar .day-names {
-        border-bottom: 1px solid #aaa;
-    }
-    .calendar .days {
-        border-bottom: 1px solid #aaa;
-    }
-CSS;
-
-$this->registerCss($style);
-
 $script = <<<JS
 
     const mockData = [
         {
-            time:'2024-02-13T06:00:00 Z',
-            cls:'bg-orange-alt',
-            desc:'ISWANTO<br/>ADITYA'
+            time:'2024-03-13',
+            desc:'ISWANTO<br/>ADITYA',
+            cls: 'bgc-alpha'
         },
         {
-            time:'2024-02-14T06:00:00 Z',
+            time:'2024-03-14T06:00:00 Z',
             cls:'bg-green-alt',
             desc:'ALGHIFFARY<br/>FAHMI'
         },
     ];
+
+    const dataSchedule = $dataSchdule;
+    console.log(dataSchedule);
 
     function initNotification() {
         Notification.requestPermission().then(perm => {
@@ -71,7 +90,6 @@ $script = <<<JS
                 $('#notification-wrapper').fadeIn("slow");
             } else {
                 console.log('permission granted');
-                showNotification('Calendar App', 'Thank You ;D');
             }
         })
     }
@@ -99,16 +117,11 @@ $script = <<<JS
         const cal = Calendar('calendar');
         const spr = Spinner('calendar');
         spr.renderSpinner().delay(0);
-        cal.bindData(mockData); 
+        cal.bindData(dataSchedule); 
         cal.render();
-
-        setTimeout(() => {
-            initNotification();            
-        }, 1000);
     })
 
-    console.log(mockData);
-
+    // console.log(mockData);
 
 JS;
 

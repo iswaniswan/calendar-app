@@ -29,10 +29,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             'work_date',
-            // 'date_created',
-            // 'date_updated',
-            // 'date_deleted',
-            //'id_team',
             [
                 'attribute' => 'id_team',
                 'format' => 'raw',
@@ -52,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             $members[] = $member->name;
                         }
                         
-                        return join(", ", $members);
+                        return strtoupper(join(", ", $members));
                     }
                     return '-';
                 }

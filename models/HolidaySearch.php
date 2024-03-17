@@ -4,25 +4,21 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Schedule;
+use app\models\Holiday;
 
 /**
- * ScheduleSearch represents the model behind the search form of `app\models\Schedule`.
+ * HolidaySearch represents the model behind the search form of `app\models\Holiday`.
  */
-class ScheduleSearch extends Schedule
+class HolidaySearch extends Holiday
 {
-
-    public $date_start, $date_end;
-
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['id', 'id_team'], 'integer'],
-            [['work_date', 'date_created', 'date_updated', 'date_deleted'], 'safe'],
-            [['date_start', 'date_end'], 'safe']
+            [['id'], 'integer'],
+            [['date', 'name', 'description'], 'safe'],
         ];
     }
 
@@ -44,7 +40,7 @@ class ScheduleSearch extends Schedule
      */
     public function search($params)
     {
-        $query = Schedule::find();
+        $query = Holiday::find();
 
         // add conditions that should always apply here
 
@@ -63,16 +59,11 @@ class ScheduleSearch extends Schedule
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'work_date' => $this->work_date,
-            'date_created' => $this->date_created,
-            'date_updated' => $this->date_updated,
-            'date_deleted' => $this->date_deleted,
-            'id_team' => $this->id_team,
+            'date' => $this->date,
         ]);
 
-        if ($params['date_start'] != null and $params['date_end'] != null) {
-            $query->andWhere(['between', 'work_date', $params['date_start'], $params['date_end']]);
-        }
+        $query->andFilterWhere(['ilike', 'name', $this->name])
+            ->andFilterWhere(['ilike', 'description', $this->description]);
 
         return $dataProvider;
     }
