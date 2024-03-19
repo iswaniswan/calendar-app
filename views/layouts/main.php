@@ -5,10 +5,13 @@
 
 use app\assets\AppAsset;
 use app\widgets\Alert;
+use yii\base\View;
 use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
 use yii\bootstrap5\Nav;
 use yii\bootstrap5\NavBar;
+use yii\helpers\Url;
+use yii\web\View as WebView;
 
 AppAsset::register($this);
 
@@ -18,6 +21,12 @@ $this->registerMetaTag(['name' => 'viewport', 'content' => 'width=device-width, 
 $this->registerMetaTag(['name' => 'description', 'content' => $this->params['meta_description'] ?? '']);
 $this->registerMetaTag(['name' => 'keywords', 'content' => $this->params['meta_keywords'] ?? '']);
 $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii::getAlias('@web/favicon.ico')]);
+
+// custom header
+$this->registerMetaTag(['http-equiv' => 'Cache-Control', 'content' => 'no-cache, no-store, must-revalidate']);
+$this->registerMetaTag(['http-equiv' => 'Pragma', 'content' => 'no-cache']);
+$this->registerMetaTag(['http-equiv' => 'Expires', 'content' => '0']);
+
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>

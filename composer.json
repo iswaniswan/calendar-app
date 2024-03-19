@@ -21,7 +21,8 @@
         "kartik-v/yii2-bootstrap5-dropdown": "dev-master",
         "kartik-v/yii2-widget-select2": "dev-master",
         "kartik-v/yii2-widget-datepicker": "dev-master",
-        "rmrevin/yii2-fontawesome": "2.10.*"
+        "rmrevin/yii2-fontawesome": "2.10.*",
+        "minishlink/web-push": "^7.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

@@ -52,9 +52,7 @@ $dataSchdule = json_encode($dataSchedule);
     <button id="btn-req-notification" class="btn btn-danger" style="position: absolute; top:8px; right:8px;">Allow</button>
 </div>
 <div class="schedule-index">
-
     <h1 class="text-center"><?= Html::encode($this->title) ?></h1>
-
     <div class="row">
         <div class="col-12">
             <div id="calendar"></div>
@@ -63,6 +61,24 @@ $dataSchdule = json_encode($dataSchedule);
 
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="modalLabel">Confirmation</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <h3>Enable Push Notification Service?</h3>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" id="btn-accept-notification-sevice" class="btn btn-primary">Accept</button>
+        </div>
+        </div>
+    </div>
+</div>
 
 <?php 
 
@@ -82,36 +98,7 @@ $script = <<<JS
     ];
 
     const dataSchedule = $dataSchdule;
-    console.log(dataSchedule);
-
-    function initNotification() {
-        Notification.requestPermission().then(perm => {
-            if (perm !== 'granted') {
-                $('#notification-wrapper').fadeIn("slow");
-            } else {
-                console.log('permission granted');
-            }
-        })
-    }
-
-    $('#btn-req-notification').on('click', function() {
-        Notification.requestPermission().then(function(permission) {
-            // Handle the user's decision
-            if (permission === "granted") {
-                $('#notification-wrapper').fadeOut('slow');                
-            } else {
-                window.open('chrome://settings/content/notifications')
-            }
-        });  
-        console.log('req notification');
-    });
-
-    function showNotification(title, message) {
-        const notification = new Notification(title, {
-            body: message,
-            icon: "your-icon.png", // Optional: provide a custom icon path
-        });
-    }
+    // console.log(dataSchedule);    
 
     $(document).ready(function() {
         const cal = Calendar('calendar');
@@ -121,10 +108,8 @@ $script = <<<JS
         cal.render();
     })
 
-    // console.log(mockData);
-
 JS;
 
-
 $this->registerJs($script, yii\web\View::POS_LOAD);
+
 ?>

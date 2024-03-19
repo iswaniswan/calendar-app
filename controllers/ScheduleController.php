@@ -4,6 +4,8 @@ namespace app\controllers;
 
 use app\models\Schedule;
 use app\models\ScheduleSearch;
+use app\models\Subscription;
+// use Minishlink\WebPush\Subscription;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -14,13 +16,40 @@ use yii\filters\VerbFilter;
  */
 class ScheduleController extends Controller
 {
+    
+    protected $allowedCorsOrigin = [
+        'http://localhost',
+        'https://localhost',
+        'http://127.0.0.1',
+        'https://localhost',
+    ];
+
     /**
      * @inheritDoc
      */
     public function behaviors()
     {
+        $behaviors = parent::behaviors();
+
+        // Define CORS filter only for specific action
+        $behaviors['corsFilter'] = [
+            'class' => \yii\filters\Cors::class,
+            'cors' => [
+                'Origin' => ['http'],
+                'Access-Control-Request-Method' => ['GET', 'POST'],
+                'Access-Control-Request-Headers' => ['*'],
+                'Access-Control-Allow-Headers' => ['content-type'],
+                'Access-Control-Allow-Credentials' => true,
+                'Access-Control-Max-Age' => 3600, 
+            ],
+            // Specify the action(s) to apply CORS to
+            'actions' => [
+                'save-subscription',
+            ],
+        ];
+
         return array_merge(
-            parent::behaviors(),
+            $behaviors,
             [
                 'verbs' => [
                     'class' => VerbFilter::className(),
@@ -161,6 +190,64 @@ class ScheduleController extends Controller
         } 
 
         return $this->redirect(['setting/index']);
+    }
+
+    public function actionSaveSubscription()
+    {
+        $response = [
+            'error' => 'Method Not Allowed', 
+            'message' => 'This action only supports POST requests.'
+        ];
+
+        if (Yii::$app->request->isPost) {
+            // Parse the request body as JSON
+            $rawBody = Yii::$app->request->getRawBody();
+            $data = json_decode($rawBody, true);
+
+            $model = new Subscription();
+            $model->find()->where([
+                'auth' => $data['keys']['auth']
+            ])->one();
+
+            // update
+            if ($model != null) {
+                $model->updateAttributes([
+                    'end_point' => $data['endpoint'],
+                    'expiration_time' => $data['expirationTime'],
+                    'auth' => $data['keys']['auth'],
+                    'p256dh' => $data['keys']['p256dh'],
+                    'raw' => $rawBody    
+                ]);
+
+                $response = [
+                    'success' => true, 
+                    'message' => 'Subscription data received and updated successfully.'
+                ];                
+
+            } else {
+                //create
+                $model = new Subscription([
+                    'end_point' => $data['endpoint'],
+                    'expiration_time' => $data['expirationTime'],
+                    'auth' => $data['keys']['auth'],
+                    'p256dh' => $data['keys']['p256dh'],
+                    'raw' => $rawBody
+                ]);
+    
+                if ($model->save()) {
+                    $response = [
+                        'success' => true, 
+                        'message' => 'Subscription data received and saved successfully.'
+                    ];
+                } else {
+                    $response['message'] = $model->error;
+                }
+            }
+
+        } 
+        
+        Yii::$app->response->format = yii\web\Response::FORMAT_JSON;
+        return $response;
     }
 
 }
