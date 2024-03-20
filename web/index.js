@@ -15,8 +15,39 @@ function showNotification(title, message) {
     });
 }
 
+function getCookie(name) {
+    const cookies = document.cookie.split("; ");
+    for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split("=");
+        if (cookieName === name) {
+            return decodeURIComponent(cookieValue);
+        }
+    }
+    return null;
+}
+
+function isPushNotificationServiceEnable() {
+    let isEnable = true;
+
+    const isPushNotificationServiceEnable = getCookie("isPushNotificationServiceEnable");
+
+    if (isPushNotificationServiceEnable && isPushNotificationServiceEnable === 'true') {
+        console.log('welcome back!');        
+    } else {
+        isEnable = false;
+    }
+
+    if (isEnable === false) {        
+        // show modal enable push notification service
+        $('#modal').modal('show');
+    }
+}
+
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
+        // check cookies if has enable push notification service
+        isPushNotificationServiceEnable();
+
         navigator.serviceWorker.register('service-worker.js').then(function(registration) {
             console.log('Service Worker registered with scope:', registration.scope);
             }).catch((error) => {
@@ -28,7 +59,6 @@ function registerServiceWorker() {
 }
 
 // @publicKey @see params.php
-
 function enableNotif() {
     Notification.requestPermission().then(permission => {
         if (permission === 'granted') {
@@ -47,6 +77,14 @@ function enableNotif() {
             });
         }
     });
+
+    $('#modal').modal('hide');
+
+    //set cookie for 1 year
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + 365); // Add days to the current date
+    const expires = "expires=" + expirationDate.toUTCString();
+    document.cookie = "isPushNotificationServiceEnable=true;" + expires + "; path=/";
 }
 
 function sendSubscriptionToServer(subscription) {
@@ -64,11 +102,7 @@ function sendSubscriptionToServer(subscription) {
     });
 }
     
-$(document).ready(function() {
-    
-    setTimeout(() => {
-        $('#modal').modal('show');
-    }, 1000);
+$(document).ready(function() {    
     
     $('#btn-accept-notification-sevice').on('click', function() {
         enableNotif();
