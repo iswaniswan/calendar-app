@@ -158,12 +158,14 @@ class SubscriptionController extends Controller
             $raw = $subscription->raw;
             $param = json_decode($raw, true);
 
-            $webPush->sendOneNotification(
+            $report = $webPush->sendOneNotification(
                 WebPushSubscription::create($param), $payload, ['TTL' => 5000]
             );
+
+            var_dump($report);
         }
         
-        
+        die();
     }
 
 }

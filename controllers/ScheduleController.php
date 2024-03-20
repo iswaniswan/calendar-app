@@ -22,6 +22,10 @@ class ScheduleController extends Controller
         'https://localhost',
         'http://127.0.0.1',
         'https://localhost',
+        'http://iswan.my.id',
+        'https://iswan.my.id',
+        'http://idncoinpay.com',
+        'https://idncoinpay.com'
     ];
 
     /**
