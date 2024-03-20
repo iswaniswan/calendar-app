@@ -35,6 +35,14 @@ $style = <<<CSS
     .bgc-alpha {
         background-color: #000
     } */
+
+    /** mobile view */
+    @media (max-width: 991px) {
+        .calendar.noselect.p-5 {
+            padding-left: unset !important;
+            padding-right: unset !important;
+        }
+    }
 CSS;
 
 foreach ($dataSchedule as $arr) {

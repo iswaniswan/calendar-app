@@ -21,7 +21,7 @@ function Calendar(id) {
         onEventClick(e) {
             StopEventPropagation(e);
             const el = e.srcElement;
-            alert(el.textContent); 
+            alert(el.innerText); 
             console.log('click'); 
             console.log(el); 
         },
