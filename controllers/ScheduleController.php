@@ -208,8 +208,8 @@ class ScheduleController extends Controller
             $rawBody = Yii::$app->request->getRawBody();
             $data = json_decode($rawBody, true);
 
-            $model = new Subscription();
-            $model->find()->where([
+            $subscription = new Subscription();
+            $model = $subscription->find()->where([
                 'auth' => $data['keys']['auth']
             ])->one();
 
