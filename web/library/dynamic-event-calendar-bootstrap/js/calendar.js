@@ -1,3 +1,39 @@
+function showModal(data) {
+    console.log('data', data);
+    let modalElement = document.querySelector('#calendarModal');
+    let modalContent = document.querySelector('#calendarContent');
+    let modalHeader = document.querySelector('#calendarHeader');
+    let modalBody = document.querySelector('#calendarBody');
+    let modalLabel = document.querySelector('#calendarModalLabel');
+
+    let classList = data.srcElement.classList;
+    let color = classList[1];
+
+    // remove current color
+    const removeClassesContaining = (element, substring) => {
+        element.classList.forEach(className => {
+            if (className.includes(substring)) {
+            element.classList.remove(className);
+            }
+        });
+    }
+    removeClassesContaining(modalHeader, 'bgc-');   
+    removeClassesContaining(modalBody, 'bgc-');   
+
+    // add new color
+    modalHeader.classList.add(color);
+    modalBody.classList.add(color);
+
+    modalContent.innerHTML = data.srcElement.outerHTML;
+    let modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+    modal.show();
+    // Listen for the 'shown.bs.modal' event using Bootstrap's on method
+    modal._element.addEventListener('shown.bs.modal', function () {
+        // Update the modal title text based on the color
+        modalLabel.textContent = (color === 'bgc-black') ? 'Hari Libur' : 'Jadwal Kebersihan Hari Ini';
+    });
+}
+
 function StopEventPropagation(e) {
     if (!e) return;
     e.cancelBubble = true;
@@ -14,16 +50,17 @@ function Calendar(id) {
         onDateClick(e) {
             StopEventPropagation(e);
             const el = e.srcElement;
-            alert(el.textContent); 
-            console.log('click'); 
+            // alert(el.textContent); 
+            // console.log('click'); 
             console.log(el);
         },
         onEventClick(e) {
             StopEventPropagation(e);
-            const el = e.srcElement;
-            alert(el.innerText); 
-            console.log('click'); 
-            console.log(el); 
+            // const el = e.srcElement;
+            // alert(el.innerText); 
+            // console.log('click'); 
+            // console.log('callback'); 
+            showModal(e);
         },
         bindData(events) {
             this.data = events.sort((a, b) => {

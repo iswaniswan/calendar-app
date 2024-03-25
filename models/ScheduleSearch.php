@@ -70,7 +70,7 @@ class ScheduleSearch extends Schedule
             'id_team' => $this->id_team,
         ]);
 
-        if ($params['date_start'] != null and $params['date_end'] != null) {
+        if (@$params['date_start'] != null and @$params['date_end'] != null) {
             $query->andWhere(['between', 'work_date', $params['date_start'], $params['date_end']]);
         }
 

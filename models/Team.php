@@ -61,6 +61,13 @@ class Team extends \yii\db\ActiveRecord
         return ArrayHelper::map(static::find()->orderBy(['order' => SORT_ASC])->all(), 'id', 'name');
     }
 
+    public static function getListWithColor()
+    {
+        return ArrayHelper::map(static::find()->orderBy(['order' => SORT_ASC])->all(), 'id', function($data) {
+            return "$data->name;$data->color_hex";
+        });
+    }
+
     public function getAllMember()
     {
         return $this->hasMany(Member::class, ['id_team' => 'id']);

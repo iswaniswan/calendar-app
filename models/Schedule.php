@@ -90,13 +90,15 @@ class Schedule extends \yii\db\ActiveRecord
         if ($this->work_date_start == null or $this->work_date_end == null or $this->id_team == null) {
             return false;
         }
+
+        // delete old data
+        Schedule::deleteAll(['between', 'work_date', $this->work_date_start, $this->work_date_end]);
         
         $work_date_start = new DateTime($this->work_date_start);
         $work_date_end = new DateTime($this->work_date_end);
-        $id_team = $this->id_team;        
+        $id_team = $this->id_team;
 
-        while ($work_date_start <= $work_date_end) {
-            
+        while ($work_date_start <= $work_date_end) {            
             // check if current date is saturday or sunday
             $day_of_week = $work_date_start->format('N');
             if ($day_of_week == 6 || $day_of_week == 7) {
@@ -137,27 +139,32 @@ class Schedule extends \yii\db\ActiveRecord
 
         $model->work_date = $work_date;
         $model->id_team = $id_team;
-        $model->save();
-        return $model;
+        if ($model->save()) {
+            return $model;
+        } else {
+            var_dump($model->error); die();
+        }
     }
 
+    /** 1 month before, 1 month current, 2 month next */
     public static function get3MonthScheduled()
     {
         $data = [];
 
         // get current month
-        $currentMonth = new DateTime(date('M'));
-        $prevMonth = $currentMonth->modify('-1 Month');
-        $nextMonth = $currentMonth->modify('+1 Month');
-
-        $date_start = $prevMonth->format('Y-m-01');
-        $date_end = $nextMonth->format('Y-m-t');
+        $currentMonth = new DateTime(date('Y-m'));
+        $date_start = (clone $currentMonth)->modify('-1 Month')->format('Y-m-01');
+        $date_end = (clone $currentMonth)->modify('+2 Month')->format('Y-m-t');
 
         $searchModel = new ScheduleSearch();
         $dataProvider = $searchModel->search([
             'date_start' => $date_start,
-            'date_end' => $date_end
+            'date_end' => $date_end,
         ]);
+        $dataProvider->pagination = false;
+
+        /** holidays */
+        $holidays = Holiday::getListDateArray();
 
         /** use custom css @see index-calendar  */
         foreach ($dataProvider->getModels() as $schedule) {
@@ -168,12 +175,24 @@ class Schedule extends \yii\db\ActiveRecord
                 $desc[] = $member->name;
             }
 
+            $cls = 'bgc-' . $schedule->team->name;
+            $text = strtoupper(join('<br/>', $desc));
+            $color_hex = $schedule->team->color_hex;
+
+            $currentDate = new DateTime($schedule->work_date);
+            if (in_array($currentDate->format('Y-m-d'), $holidays)) {
+                $cls = 'bgc-black';
+                $text = Holiday::getName($currentDate->format('Y-m-d'));
+                $color_hex = '#222';
+            }
+
             $data[] = [
                 'time' => $schedule->work_date,
-                'cls' => 'bgc-' . $schedule->team->name,
-                'desc' => strtoupper(join('<br/>', $desc)),
-                'color_hex' => $schedule->team->color_hex
+                'cls' => $cls,
+                'desc' => $text,
+                'color_hex' => $color_hex
             ];
+
         }
         
         return $data;

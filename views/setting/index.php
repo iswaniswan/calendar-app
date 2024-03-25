@@ -7,6 +7,7 @@ use yii\widgets\ActiveForm;
 use app\models\Team;
 use kartik\select2\Select2;
 use kartik\date\DatePicker;
+use yii\web\JsExpression;
 
 ?>
 <h1 class="mb-5">Settings</h1>
@@ -63,11 +64,22 @@ use kartik\date\DatePicker;
                     <div class="row">
                         <div class="col-6">
                             <?= $form->field($schedule, 'id_team')->widget(Select2::class, [
-                                'data' => Team::getList(),
+                                'data' => Team::getListWithColor(),
                                 'options' => [
                                     'placeholder' => '- Pilih Team Awal Sesuai Urutan -',
                                 ],
                                 'pluginOptions' => [
+                                    'templateResult' => new JsExpression('function(data) {
+                                        const _arr = data.text.split(";");
+                                        const [_text, _color] = _arr;
+                                        return "<div><span class=\'me-3\' style=\'width:10%; display:inline-flex; height:2vh; background-color:"+_color+"\'></span>"+_text+"</div>";
+                                    }'),
+                                    'templateSelection' => new JsExpression('function(data) {
+                                        const _arr = data.text.split(";");
+                                        const [_text, _color] = _arr;
+                                        return _text;
+                                    }'),
+                                    'escapeMarkup' => new JsExpression('function(markup) { return markup; }'),
                                     'allowClear' => false
                                 ],
                             ])->label('Initial team start') ?>    

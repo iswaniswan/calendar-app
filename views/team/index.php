@@ -27,10 +27,17 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            // ['class' => 'yii\grid\SerialColumn'],
+            [
+                'attribute' => 'order',
+                'format' => 'raw',
+                'label' => 'Order',
+                'headerOptions' => ['style' => 'width:4%'],
+            ],
             [
                 'attribute' => 'name',
                 'format' => 'raw',
+                'headerOptions' => ['style' => 'width:16%'],
                 'value' => function($model) {
                     return strtoupper(@$model->name);
                 },
@@ -38,6 +45,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'color_hex',
                 'format' => 'raw',
+                'headerOptions' => ['style' => 'width:8%'],
                 'value' => function($model) {
                     $html = <<<HTML
                         <div style="background:$model->color_hex; width: 100%; min-height: 24px">
@@ -45,6 +53,24 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                     HTML;
                     return $html;
+                },
+            ],
+            [
+                'attribute' => 'id',
+                'format' => 'raw',
+                'label' => 'Member',
+                'headerOptions' => ['style' => 'width:auto'],
+                'value' => function($model) {
+                    $allMember = @$model->allMember;
+                    $arr = [];
+                    if ($allMember != null) {
+                        foreach ($allMember as $member) {
+                            $arr[] = $member->name;
+                        }
+
+                        return join(", ", $arr);
+                    }
+                    return '-';
                 },
             ],
             // 'date_created',

@@ -85,6 +85,7 @@ function enableNotif() {
     expirationDate.setDate(expirationDate.getDate() + 365); // Add days to the current date
     const expires = "expires=" + expirationDate.toUTCString();
     document.cookie = "isPushNotificationServiceEnable=true;" + expires + "; path=/";
+    initIcon();
 }
 
 function sendSubscriptionToServer(subscription) {
@@ -101,6 +102,39 @@ function sendSubscriptionToServer(subscription) {
         }
     });
 }
+
+// Function to retrieve a cookie by name
+function getCookie(name) {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        // Check if this is the cookie we are looking for
+        if (cookie.startsWith(name + '=')) {
+            return cookie.substring(name.length + 1);
+        }
+    }
+    // Cookie not found
+    return null;
+}
+
+// init icon
+function initIcon() {
+    $('.notification-bell').css({'display': 'none'});
+
+    // check permission
+    Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {            
+            // display icon
+            const myCookieValue = getCookie('isPushNotificationServiceEnable');
+            if (myCookieValue && myCookieValue === 'true') {
+                $('.notification-bell.text-success').fadeIn();
+            } else {
+                $('.notification-bell.text-danger').fadeIn();
+            }
+        }
+    });
+}
+
     
 $(document).ready(function() {    
     
@@ -109,4 +143,7 @@ $(document).ready(function() {
     })
 
     initNotification();
+
+    initIcon();
+
 });
