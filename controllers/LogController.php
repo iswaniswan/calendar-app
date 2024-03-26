@@ -2,23 +2,16 @@
 
 namespace app\controllers;
 
-use app\models\Holiday;
 use app\models\Log;
-use app\models\Schedule;
-use Yii;
-use app\models\Subscription;
-use app\models\SubscriptionSearch;
+use app\models\LogSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
-use Minishlink\WebPush\Subscription As WebPushSubscription;
-use Minishlink\WebPush\WebPush;
-
 /**
- * SubscriptionController implements the CRUD actions for Subscription model.
+ * LogController implements the CRUD actions for Log model.
  */
-class SubscriptionController extends Controller
+class LogController extends Controller
 {
     /**
      * @inheritDoc
@@ -39,13 +32,13 @@ class SubscriptionController extends Controller
     }
 
     /**
-     * Lists all Subscription models.
+     * Lists all Log models.
      *
      * @return string
      */
     public function actionIndex()
     {
-        $searchModel = new SubscriptionSearch();
+        $searchModel = new LogSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
         return $this->render('index', [
@@ -55,7 +48,7 @@ class SubscriptionController extends Controller
     }
 
     /**
-     * Displays a single Subscription model.
+     * Displays a single Log model.
      * @param int $id ID
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
@@ -68,13 +61,13 @@ class SubscriptionController extends Controller
     }
 
     /**
-     * Creates a new Subscription model.
+     * Creates a new Log model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
     public function actionCreate()
     {
-        $model = new Subscription();
+        $model = new Log();
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
@@ -90,7 +83,7 @@ class SubscriptionController extends Controller
     }
 
     /**
-     * Updates an existing Subscription model.
+     * Updates an existing Log model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id ID
      * @return string|\yii\web\Response
@@ -110,7 +103,7 @@ class SubscriptionController extends Controller
     }
 
     /**
-     * Deletes an existing Subscription model.
+     * Deletes an existing Log model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
      * @return \yii\web\Response
@@ -124,82 +117,18 @@ class SubscriptionController extends Controller
     }
 
     /**
-     * Finds the Subscription model based on its primary key value.
+     * Finds the Log model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id ID
-     * @return Subscription the loaded model
+     * @return Log the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Subscription::findOne(['id' => $id])) !== null) {
+        if (($model = Log::findOne(['id' => $id])) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-
-    public function actionSendNotification()
-    {        
-        // check if today is holiday
-        $current = date('Y-m-d');
-        $holidays = Holiday::getListDateArray();
-        if (in_array($current, $holidays)) {
-            return;
-        }
-        
-        $auth = [
-            'VAPID' => Yii::$app->params['vapidKeys']
-        ];
-        
-        $payload = [];
-
-        // get schedule today        
-        $model = Schedule::getToday();
-        if ($model != null) {
-            $allMember = @$model->allMember;
-            $text = [];
-            foreach (@$allMember as $member) {
-                $text[] = $member->name;
-            }
-
-            $payload['title'] = 'Jadwal Kebersihan Hari Ini';
-            $payload['body'] = join("\n", $text);
-        }
-
-        // payload empty = week end
-        if (empty($payload)) {
-            return;
-        }
-
-        $payload = json_encode($payload);
-
-        $webPush = new WebPush($auth);
-
-        $allSubscription = Subscription::findAll([
-            'f_status' => true
-        ]);
-
-        foreach ($allSubscription as $subscription) {
-            $raw = $subscription->raw;
-            $param = json_decode($raw, true);
-
-            $report = $webPush->sendOneNotification(
-                WebPushSubscription::create($param), $payload, ['TTL' => 5000]
-            );
-
-            $model = new Log([
-                'report' => json_encode($report)
-            ]);
-            $model->save();
-        }
-
-        $response = [
-            'message' => 'success',
-            'data' => []
-        ];
-
-        echo json_encode($response);
-    }
-
 }

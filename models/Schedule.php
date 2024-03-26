@@ -198,4 +198,13 @@ class Schedule extends \yii\db\ActiveRecord
         return $data;
     }
 
+    public static function getToday()
+    {
+        $current = date('Y-m-d');
+
+        return static::find()->where([
+            'work_date' => $current
+        ])->one();
+    }
+
 }
