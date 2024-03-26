@@ -160,7 +160,7 @@ class SubscriptionController extends Controller
             $allMember = @$model->allMember;
             $text = [];
             foreach (@$allMember as $member) {
-                $text[] = $member->name;
+                $text[] = ucwords($member->name);
             }
 
             $payload['title'] = 'Jadwal Kebersihan Hari Ini';
